@@ -1,0 +1,9 @@
+<div class="card h-100">
+    <div class="card-body">
+        <h3 *ngIf="title" class="card-title text-center">{{ title }}</h3>
+        <div style="display: block">
+            <canvas baseChart [data]="data" [labels]="lables" [colors]="colors" chartType="doughnut">
+            </canvas>
+        </div>
+    </div>
+</div>
