@@ -9,11 +9,13 @@ export class SidebarService {
         {
             title: 'Dashboard',
             icon: 'mdi mdi-gauge',
+            ruta: '/dashboard',
             menu: [
-                { title: 'Principal', ruta: 'home' },
-                { title: 'Progress', ruta: 'progress' },
+                { title: 'Principal', ruta: '' },
                 { title: 'Grafica', ruta: 'grafica1' },
-
+                { title: 'Progress', ruta: 'progress' },
+                { title: 'Promesas', ruta: 'promesas' },
+                { title: 'RxJs', ruta: 'rxjs' },
             ]
         }
     ];
