@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <ul id="themecolors">
+                    <li>Color del tema</li>
+                    <li>
+                        <a (click)="changeColor('default')" data-theme="default" class="selector default-theme"
+                            [ngClass]="{'default-dark-theme': darkMode, 'default-theme': !darkMode}">1</a>
+                    </li>
+                    <li>
+                        <a (click)="changeColor('green')" data-theme="green" class="selector green-theme"
+                            [ngClass]="{'green-dark-theme': darkMode, 'green-theme': !darkMode}">2</a>
+                    </li>
+                    <li>
+                        <a (click)="changeColor('red')" data-theme="red" class="selector red-theme"
+                            [ngClass]="{'red-dark-theme': darkMode, 'red-theme': !darkMode}">3</a>
+                    </li>
+                    <li>
+                        <a (click)="changeColor('blue')" data-theme="blue" class="selector blue-theme"
+                            [ngClass]="{'blue-dark-theme': darkMode, 'blue-theme': !darkMode}">4</a>
+                    </li>
+                    <li>
+                        <a (click)="changeColor('purple')" data-theme="purple" class="selector purple-theme"
+                            [ngClass]="{'purple-dark-theme': darkMode, 'purple-theme': !darkMode}">5</a>
+                    </li>
+                    <li>
+                        <a (click)="changeColor('megna')" data-theme="megna" class="selector megna-theme"
+                            [ngClass]="{'megna-dark-theme': darkMode, 'megna-theme': !darkMode}">6</a>
+                    </li>
+
+                    <div class="switch">
+                        <label>Modo Oscuro
+                            <input type="checkbox" [(ngModel)]="darkMode" (change)="changeDark()"><span
+                                class="lever switch-col-black"></span>
+                        </label>
+                    </div>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
