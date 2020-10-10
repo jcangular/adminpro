@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        private ngZone: NgZone,
         private userService: UserService
     ) { }
 
@@ -56,6 +57,9 @@ export class LoginComponent implements OnInit {
         return field.invalid && this.doLogin;
     }
 
+    /**
+     * Inicia sesión en la aplicación.
+     */
     login(): void {
         this.doLogin = true;
         if (this.loginForm.invalid) {
@@ -66,28 +70,15 @@ export class LoginComponent implements OnInit {
         this.userService.loginUser(this.loginForm.value)
             .subscribe(result => {
                 this.router.navigateByUrl('/');
-            }, ({ error }) => {
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Error al iniciar sessión!',
-                    text: error.error.msg,
-                    onAfterClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
+            },
+                ({ error }) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error al iniciar sessión!',
+                        text: error.error.msg,
+                        onAfterClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
+                    });
                 });
-            });
-    }
-
-    /**
-     * Inicializa el GoogleAuth.
-     */
-    private googleInit(): void {
-        gapi.load('auth2', () => {
-            this.auth2 = gapi.auth2.init({
-                client_id: '707564336535-j96f2v4aj6hkvlimvegvniftqck81vsi.apps.googleusercontent.com',
-                cookie_policy: 'single_host_origin'
-            });
-
-            this.attachSignIn(document.getElementById('my-signin2'));
-        });
     }
 
     /**
@@ -100,14 +91,11 @@ export class LoginComponent implements OnInit {
             height: 50,
             theme: 'dark'
         });
-        this.googleInit();
-        const div = document.getElementsByClassName('abcRioButtonContents') as HTMLCollectionOf<HTMLElement>;
-        setTimeout(() => {
-            if (div.length > 0) {
-                const span = div[0].lastElementChild;
-                span.innerHTML = 'Google';
-            }
-        }, 200);
+        this.userService.googleInit()
+            .then((googleAuth) => {
+                this.auth2 = googleAuth;
+                this.attachSignIn(document.getElementById('my-signin2'));
+            });
     }
 
     /**
@@ -120,7 +108,7 @@ export class LoginComponent implements OnInit {
                 const idToken = googleUser.getAuthResponse().id_token;
                 this.userService.loginGoogle(idToken)
                     .subscribe(result => {
-                        this.router.navigateByUrl('/');
+                        this.ngZone.run(() => this.router.navigateByUrl('/'));
                     });
             }, (error) => {
                 console.warn(error);

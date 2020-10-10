@@ -1,21 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
-    styles: [
-    ]
+    styles: [`
+        .logout {
+            cursor: pointer;
+        }
+    `]
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
 
     menu: any[];
 
-    constructor(private sidebarService: SidebarService) {
+    constructor(
+        private sidebarService: SidebarService,
+        private userService: UserService
+    ) {
         this.menu = this.sidebarService.menu;
     }
 
-    ngOnInit(): void {
+    /**
+     * Cierra la sesión de la aplicación.
+     */
+    public logOut(): void {
+        this.userService.logOut();
     }
+
 
 }
