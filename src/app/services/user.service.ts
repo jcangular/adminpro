@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
 
 import { LoginForm } from '../interfaces/login.form';
 import { RegisterForm } from '../interfaces/register.form';
+import { IAPIError } from '../models/api.error.model';
+import { IUser, User } from '../models/user.model';
 
 const baseURL = environment.baseURL;
 
@@ -18,6 +20,8 @@ export class UserService {
 
     private auth2: gapi.auth2.GoogleAuth;
 
+    public user: User;
+
     constructor(
         private http: HttpClient,
         private router: Router
@@ -26,10 +30,21 @@ export class UserService {
     }
 
     /**
+     * Devuelve el token de la sesión activa.
+     */
+    private get token(): string {
+        return sessionStorage.getItem('token') || '';
+    }
+
+    private get userId(): string {
+        return this.user.id;
+    }
+
+    /**
      * Registra un nuevo usuario a la aplicación.
      * @param form contiene el formulario de registro.
      */
-    registerUser(form: RegisterForm): Observable<any> {
+    public registerUser(form: RegisterForm): Observable<any> {
         return this.http.post(`${baseURL}/users`, form)
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
@@ -40,7 +55,7 @@ export class UserService {
      * Inicia sesión con correo y contraseña.
      * @param form contiene el formulario de inicio de sesión.
      */
-    loginUser(form: LoginForm): Observable<any> {
+    public loginUser(form: LoginForm): Observable<any> {
         return this.http.post(`${baseURL}/auth/login`, form)
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
@@ -72,7 +87,7 @@ export class UserService {
      * Hace login con Google Sign-In.
      * @param idToken es el token de Google.
      */
-    loginGoogle(idToken: string): Observable<any> {
+    public loginGoogle(idToken: string): Observable<any> {
         return this.http.post(`${baseURL}/auth/google`, { token: idToken })
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
@@ -83,21 +98,38 @@ export class UserService {
     /**
      * Valida y renueva el token (JWT) de la aplicación.
      */
-    tokenValidation(): Observable<boolean> {
-        const token = sessionStorage.getItem('token') || '';
+    public tokenValidation(): Observable<boolean> {
         return this.http.get(`${baseURL}/auth/renew`, {
-            headers: { 'x-token': token }
+            headers: { 'x-token': this.token }
         }).pipe(
-            tap((result: any) => sessionStorage.setItem('token', result.token)),
-            map(result => true),
+            map((result: any) => {
+                this.user = User.createUserFromAPI(result.user);
+                sessionStorage.setItem('token', result.token);
+                return true;
+            }),
             catchError(err => from([false]))
+        );
+    }
+
+    public updateUser(profileData: { name: string, email: string; }): Observable<void> {
+        return this.http.put(`${baseURL}/users/${this.userId}`, profileData, {
+            headers: { 'x-token': this.token }
+        }).pipe(
+            map((result: any) => {
+                const u = User.createUserFromAPI(result.user);
+                this.user.name = u.name;
+                this.user.email = u.email;
+                this.user.updatedOn = u.updatedOn;
+                this.user.updatedBy = u.updatedBy;
+                return;
+            })
         );
     }
 
     /**
      * Cierra la sesión y renueva el token de la aplicación.
      */
-    async logOut(): Promise<void> {
+    public async logOut(): Promise<void> {
         sessionStorage.removeItem('token');
         await this.auth2.signOut();
         this.router.navigateByUrl('/auth/login');

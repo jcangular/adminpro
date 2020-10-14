@@ -1341,7 +1341,7 @@ File: scss
 }
 .topbar ul.dropdown-user {
   padding: 0px;
-  min-width: 270px;
+  min-width: 300px;
 }
 .topbar ul.dropdown-user li {
   list-style: none;

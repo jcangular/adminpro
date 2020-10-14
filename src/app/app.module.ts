@@ -1,5 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeHN from '@angular/common/locales/es-HN';
+
+registerLocaleData(localeHN);
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -20,7 +24,9 @@ import { NopagefoundComponent } from './nopagefound/nopagefound.component';
         PagesModule,
         AuthModule,
     ],
-    providers: [],
+    providers: [
+        { provide: LOCALE_ID, useValue: 'es-HN' }
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

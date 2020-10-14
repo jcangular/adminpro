@@ -1,0 +1,96 @@
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h3 class="card-title">
+                    Información de mi cuenta
+                    <small *ngIf="user.status==='I'" class="label label-rounded label-danger">Inactivo</small>
+                    <small *ngIf="user.status==='A'" class="label label-rounded label-success">Activo</small>
+                </h3>
+
+                <form class="form" [formGroup]="profileForm" (submit)="updateProfile()">
+
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="mdi mdi-account-card-details"></i></div>
+                            <input type="text" class="form-control" placeholder="Nombre Apellido"
+                                formControlName="name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Correo Electrónico
+                            <small class="badge badge-success" *ngIf="user.google">with Google</small>
+                        </label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="mdi mdi-contact-mail"></i></div>
+                            <input type="email" class="form-control" placeholder="Correo electrónico"
+                                formControlName="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="mdi mdi-account-star"></i></div>
+                            <input type="text" class="form-control" placeholder="Rol" formControlName="role">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Registrado el</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="mdi mdi-bookmark-plus"></i></div>
+                            <input type="text" class="form-control" formControlName="createdOn">
+                        </div>
+                        <small *ngIf="lastUpdate" class="text-muted">Última actualización: {{lastUpdate}} </small>
+                    </div>
+
+
+
+
+                    <button type="submit" class="btn btn-lg btn-primary btn-block waves-effect waves-light"
+                        [disabled]="profileForm.invalid">
+                        <i class="fa fa-save"></i> Actualizar Perfil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Foto de Perfil</h4>
+
+
+                <div class="dropify-wrapper has-preview">
+
+                    <input type="file" id="input-file-now-custom-1" class="dropify" (change)="onFileChange($event)">
+
+                    <button type="button" class="dropify-clear">Remover</button>
+                    <div class="dropify-preview" style="display: block;">
+                        <span class="dropify-render">
+                            <img class="img-rounded" [src]="userImage">
+                        </span>
+                        <div class="dropify-infos">
+                            <div class="dropify-infos-inner">
+                                <p class="dropify-infos-message">Arrastre y suelte o haga clic para reemplazar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-lg btn-primary btn-block waves-effect waves-light mt-3">
+                    <i class="fa fa-file-image-o"></i> Cambiar Imagen
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
