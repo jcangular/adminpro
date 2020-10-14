@@ -43,7 +43,14 @@ import { ProfileComponent } from './profile/profile.component';
         FormsModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,
-        ToastrModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-bottom-right',
+            maxOpened: 6,
+            closeButton: true
+        }),
         SharedModule,
         ComponentsModule
     ]

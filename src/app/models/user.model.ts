@@ -44,6 +44,10 @@ export class User {
         );
     }
 
+    public set updateDate(updatedOn: number) {
+        this.updatedOn = new Date(updatedOn);
+    }
+
     public get roleName(): string {
         return this.role === 'USER_ROLE' ? 'Usuario' : 'Administrador';
     }

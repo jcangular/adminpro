@@ -29,7 +29,7 @@
                         <div class="input-group">
                             <div class="input-group-addon"><i class="mdi mdi-contact-mail"></i></div>
                             <input type="email" class="form-control" placeholder="Correo electrónico"
-                                formControlName="email">
+                                [readOnly]="user.google" formControlName="email">
                         </div>
                     </div>
 
@@ -37,7 +37,8 @@
                         <label>Rol</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="mdi mdi-account-star"></i></div>
-                            <input type="text" class="form-control" placeholder="Rol" formControlName="role">
+                            <input type="text" class="form-control" placeholder="Rol" [readOnly]="isNormalUser"
+                                formControlName="role">
                         </div>
                     </div>
 
@@ -45,18 +46,17 @@
                         <label>Registrado el</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="mdi mdi-bookmark-plus"></i></div>
-                            <input type="text" class="form-control" formControlName="createdOn">
+                            <input type="text" class="form-control" readonly formControlName="createdOn">
                         </div>
                         <small *ngIf="lastUpdate" class="text-muted">Última actualización: {{lastUpdate}} </small>
                     </div>
 
-
-
-
-                    <button type="submit" class="btn btn-lg btn-primary btn-block waves-effect waves-light"
-                        [disabled]="profileForm.invalid">
-                        <i class="fa fa-save"></i> Actualizar Perfil
+                    <button type="submit" class="btn btn-lg btn-primary btn-block" [disabled]="!canProfileUpdate"
+                        [class.disabled]="!canProfileUpdate">
+                        <i *ngIf="profileUpdating" class="fa fa-spin fa-spinner"></i>
+                        Actualizar Perfil
                     </button>
+
                 </form>
             </div>
         </div>
@@ -70,12 +70,17 @@
 
                 <div class="dropify-wrapper has-preview">
 
-                    <input type="file" id="input-file-now-custom-1" class="dropify" (change)="onFileChange($event)">
+                    <input #inputImage type="file" id="input-file-now-custom-1" class="dropify"
+                        (change)="onFileChange($event.target.files)">
 
-                    <button type="button" class="dropify-clear">Remover</button>
+                    <button type="button" *ngIf="imageFile" class="dropify-clear" (click)="restoreImage()">
+                        Cancelar
+                    </button>
+
                     <div class="dropify-preview" style="display: block;">
                         <span class="dropify-render">
-                            <img class="img-rounded" [src]="userImage">
+                            <img *ngIf="!newImage" class="img-rounded" [src]="user.urlImage">
+                            <img *ngIf="newImage" class="img-rounded" [src]="newImage">
                         </span>
                         <div class="dropify-infos">
                             <div class="dropify-infos-inner">
@@ -85,8 +90,10 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-lg btn-primary btn-block waves-effect waves-light mt-3">
-                    <i class="fa fa-file-image-o"></i> Cambiar Imagen
+                <button type="button" [disabled]="!canImageUpdate" (click)="updateImage()"
+                    class="btn btn-lg btn-primary btn-block mt-3" [class.disabled]="!canImageUpdate">
+                    <i *ngIf="imageUpdating" class="fa fa-spin fa-spinner"></i>
+                    Cambiar Imagen
                 </button>
 
             </div>

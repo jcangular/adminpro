@@ -8,8 +8,7 @@ import { environment } from '../../environments/environment';
 
 import { LoginForm } from '../interfaces/login.form';
 import { RegisterForm } from '../interfaces/register.form';
-import { IAPIError } from '../models/api.error.model';
-import { IUser, User } from '../models/user.model';
+import { User } from '../models/user.model';
 
 const baseURL = environment.baseURL;
 
@@ -111,6 +110,10 @@ export class UserService {
         );
     }
 
+    /**
+     * Actualiza el nombre y el correo electrónico de un usuario.
+     * @param profileData contine el nombre y el correo electrónico.
+     */
     public updateUser(profileData: { name: string, email: string; }): Observable<void> {
         return this.http.put(`${baseURL}/users/${this.userId}`, profileData, {
             headers: { 'x-token': this.token }

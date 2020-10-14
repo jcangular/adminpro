@@ -2,13 +2,14 @@ import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { IAPIError } from '../../models/api.model';
 import { UserService } from '../../services/user.service';
 
 const MAILREGEXP = '^[a-z0-9]([._\-]{0,1}[a-z0-9])*@[a-z0-9\-]+([.][a-z]{2,3}){1,3}$';
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+    styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
 
@@ -71,11 +72,13 @@ export class LoginComponent implements OnInit {
             .subscribe(result => {
                 this.router.navigateByUrl('/');
             },
-                ({ error }) => {
+                (err) => {
+                    // TODO: Controlar el error cuando el back-end no está disponible.
+                    const error = err.error as IAPIError;
                     Swal.fire({
                         icon: 'error',
                         title: '¡Error al iniciar sessión!',
-                        text: error.error.msg,
+                        text: error.message,
                         onAfterClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
                     });
                 });

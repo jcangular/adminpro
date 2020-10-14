@@ -21,7 +21,7 @@ import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
     ],
     imports: [
         CommonModule,
-        RouterModule
+        RouterModule,
     ]
 })
 export class SharedModule { }
