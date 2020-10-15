@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 
 import { LoginForm } from '../interfaces/login.form';
 import { RegisterForm } from '../interfaces/register.form';
+import { IAPIGetUsers } from '../interfaces/api.interfaces';
 import { User } from '../models/user.model';
 
 const baseURL = environment.baseURL;
@@ -37,6 +38,12 @@ export class UserService {
 
     private get userId(): string {
         return this.user.id;
+    }
+
+    private get headers(): { headers: { 'x-token': string; }; } {
+        return {
+            headers: { 'x-token': this.token }
+        };
     }
 
     /**
@@ -98,16 +105,24 @@ export class UserService {
      * Valida y renueva el token (JWT) de la aplicación.
      */
     public tokenValidation(): Observable<boolean> {
-        return this.http.get(`${baseURL}/auth/renew`, {
-            headers: { 'x-token': this.token }
-        }).pipe(
-            map((result: any) => {
-                this.user = User.createUserFromAPI(result.user);
-                sessionStorage.setItem('token', result.token);
-                return true;
-            }),
-            catchError(err => from([false]))
-        );
+        return this.http.get(`${baseURL}/auth/renew`, this.headers)
+            .pipe(
+                map((result: any) => {
+                    this.user = User.createUserFromAPI(result.user);
+                    sessionStorage.setItem('token', result.token);
+                    return true;
+                }),
+                catchError(err => from([false]))
+            );
+    }
+
+    public getUsers(since: number = 0, limit: number = 0): Observable<IAPIGetUsers> {
+        return this.http.get(`${baseURL}/users?from=${since}&limit=${limit}`, this.headers)
+            .pipe(
+                map((result: IAPIGetUsers) => {
+                    return result;
+                })
+            );
     }
 
     /**
@@ -115,18 +130,17 @@ export class UserService {
      * @param profileData contine el nombre y el correo electrónico.
      */
     public updateUser(profileData: { name: string, email: string; }): Observable<void> {
-        return this.http.put(`${baseURL}/users/${this.userId}`, profileData, {
-            headers: { 'x-token': this.token }
-        }).pipe(
-            map((result: any) => {
-                const u = User.createUserFromAPI(result.user);
-                this.user.name = u.name;
-                this.user.email = u.email;
-                this.user.updatedOn = u.updatedOn;
-                this.user.updatedBy = u.updatedBy;
-                return;
-            })
-        );
+        return this.http.put(`${baseURL}/users/${this.userId}`, profileData, this.headers)
+            .pipe(
+                map((result: any) => {
+                    const u = User.createUserFromAPI(result.user);
+                    this.user.name = u.name;
+                    this.user.email = u.email;
+                    this.user.updatedOn = u.updatedOn;
+                    this.user.updatedBy = u.updatedBy;
+                    return;
+                })
+            );
     }
 
     /**

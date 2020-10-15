@@ -17,6 +17,18 @@ export class SidebarService {
                 { title: 'Promesas', ruta: 'promesas' },
                 { title: 'RxJs', ruta: 'rxjs' },
             ]
+        },
+        {
+            title: 'Mantenimiento',
+            // icon: 'mdi mdi-console',
+            icon: 'fa fa-tasks',
+            ruta: '/dashboard',
+            menu: [
+                { title: 'Usuarios', ruta: 'users' },
+                { title: 'Hospitales', ruta: 'hospitals' },
+                { title: 'Doctores', ruta: 'doctors' }
+            ]
+
         }
     ];
 

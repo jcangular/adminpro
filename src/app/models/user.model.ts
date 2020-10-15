@@ -1,26 +1,6 @@
 import { environment } from '../../environments/environment';
+import { IAPIUser, IAPIUserRef } from '../interfaces/api.interfaces';
 const baseURL = environment.baseURL;
-
-export interface IUserRef {
-    id: string;
-    name: string;
-    status: string;
-    img?: string;
-}
-
-export interface IUser {
-    name: string;
-    email: string;
-    id?: string;
-    role?: string;
-    status?: string;
-    google?: boolean;
-    createdOn?: Date;
-    updatedBy?: IUserRef;
-    updatedOn?: Date;
-    img?: string;
-}
-
 
 export class User {
     constructor(
@@ -31,12 +11,12 @@ export class User {
         public status?: string,
         public google?: boolean,
         public createdOn?: Date,
-        public updatedBy?: IUserRef,
+        public updatedBy?: IAPIUserRef,
         public updatedOn?: Date,
         public img?: string,
     ) { }
 
-    public static createUserFromAPI(u: IUser): User {
+    public static createUserFromAPI(u: IAPIUser): User {
         const createdOn: Date = u.createdOn ? new Date(u.createdOn) : null;
         const updatedOn: Date = u.updatedOn ? new Date(u.updatedOn) : null;
         return new User(

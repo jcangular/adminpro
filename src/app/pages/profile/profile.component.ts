@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { User } from '../../models/user.model';
 import { ImageService } from '../../services/image.service';
 import { UserService } from '../../services/user.service';
-import { IAPIError, IAPISetImage } from '../../models/api.model';
+import { IAPIError, IAPISetImage } from '../../interfaces/api.interfaces';
 import { Observable, Subscription } from 'rxjs';
 
 const datePipe: DatePipe = new DatePipe('es-HN');

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { IAPIError, IAPISetImage } from '../models/api.model';
+import { IAPIError, IAPISetImage } from '../interfaces/api.interfaces';
 
 const baseURL = environment.baseURL;
 

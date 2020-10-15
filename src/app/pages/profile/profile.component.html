@@ -6,8 +6,8 @@
 
                 <h3 class="card-title">
                     Información de mi cuenta
-                    <small *ngIf="user.status==='I'" class="label label-rounded label-danger">Inactivo</small>
-                    <small *ngIf="user.status==='A'" class="label label-rounded label-success">Activo</small>
+                    <small *ngIf="user.status==='I'" class="badge badge-danger">Inactivo</small>
+                    <small *ngIf="user.status==='A'" class="badge badge-success">Activo</small>
                 </h3>
 
                 <form class="form" [formGroup]="profileForm" (submit)="updateProfile()">
