@@ -36,8 +36,54 @@ export interface IAPIUser {
     img?: string;
 }
 
+export interface IAPIHospital {
+    id?: string;
+    code: string;
+    name: string;
+    status: string;
+    createdBy?: IAPIUserRef;
+    createdOn?: Date;
+    updatedBy?: IAPIUserRef;
+    updatedOn?: Date;
+    img?: string;
+}
+
+export interface IAPIDoctor {
+    id?: string;
+    code: string;
+    name: string;
+    status: string;
+    hospital?: any;
+    createdBy?: IAPIUserRef;
+    createdOn?: Date;
+    updatedBy?: IAPIUserRef;
+    updatedOn?: Date;
+    img?: string;
+}
+
 export interface IAPIGetUsers extends IAPIResponse {
     users: IAPIUser[];
     count: number;
     total: number;
 }
+
+export interface IAPIGetHospitals extends IAPIResponse {
+    hospitals: IAPIHospital[];
+    count: number;
+    total: number;
+}
+
+export interface IAPIFindUsers extends IAPIResponse {
+    users: IAPIUser[];
+    totalUsers: number;
+}
+
+export interface IAPIFindHospitals extends IAPIResponse {
+    users: IAPIHospital[];
+    totalHospitals: number;
+}
+export interface IAPIFindDoctors extends IAPIResponse {
+    users: IAPIDoctor[];
+    totalDoctors: number;
+}
+

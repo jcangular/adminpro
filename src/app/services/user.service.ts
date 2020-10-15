@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, delay, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -117,11 +117,11 @@ export class UserService {
     }
 
     public getUsers(since: number = 0, limit: number = 0): Observable<IAPIGetUsers> {
-        return this.http.get(`${baseURL}/users?from=${since}&limit=${limit}`, this.headers)
+        return this.http
+            .get(`${baseURL}/users?from=${since}&limit=${limit}`, this.headers)
             .pipe(
-                map((result: IAPIGetUsers) => {
-                    return result;
-                })
+                // delay(500),
+                map((result: IAPIGetUsers) => result)
             );
     }
 

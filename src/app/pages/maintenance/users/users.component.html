@@ -3,8 +3,9 @@
         <div class="card">
             <div class="card-body">
 
-                <input type="text" class="form-control" placeholder="Buscar usuario...">
-
+                <input id="txtBuscar" type="text" class="form-control" [readOnly]="loading"
+                    placeholder="Buscar usuarios por nombre...">
+                <small *ngIf="searching" class="text-muted">buscando...</small>
             </div>
         </div>
     </div>
@@ -64,20 +65,28 @@
                                 </td>
 
                             </tr>
-
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-secondary" [disabled]="!hasPrevious" [class.disabled]="!hasPrevious"
-                    (click)="toPrevious()">
-                    <i class="fa  fa-caret-left"></i>
-                    Anteriores
-                </button>
-                <button class="btn btn-secondary ml-2" [disabled]="!hasNext" [class.disabled]="!hasNext"
-                    (click)="toNext()">
-                    Siguientes
-                    <i class="fa  fa-caret-right"></i>
-                </button>
+
+                <div class="row ">
+                    <div class="col-auto mr-auto text-left">
+                        <button class="btn btn-secondary" [disabled]="!hasPrevious" [class.disabled]="!hasPrevious"
+                            (click)="toPrevious()">
+                            <i class="fa  fa-caret-left"></i>
+                            Anteriores
+                        </button>
+                        <button class="btn btn-secondary ml-sm-2 mt-2 mt-sm-0" [disabled]="!hasNext"
+                            [class.disabled]="!hasNext" (click)="toNext()">
+                            Siguientes
+                            <i class="fa  fa-caret-right"></i>
+                        </button>
+                    </div>
+                    <div class="col-auto text-muted text-right align-middle">
+                        <span class="ml-2">{{showingEntries}}</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
