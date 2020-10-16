@@ -4,9 +4,11 @@ import { fromEvent, of } from 'rxjs';
 import { catchError, debounceTime, filter, map, pluck, switchMap, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { IAPIError, IAPIFindUsers, IAPIResponse } from '../../../interfaces/api.interfaces';
 import { User } from '../../../models/user.model';
+import { IAPIError, IAPIFindUsers, IAPIResponse } from '../../../interfaces/api.interfaces';
+
 import { FindsService } from '../../../services/finds.service';
+import { ModalImagenService } from '../../../services/modal-imagen.service';
 import { UserService } from '../../../services/user.service';
 
 @Component({
@@ -31,6 +33,7 @@ export class UsersComponent implements OnInit {
         private userService: UserService,
         private findsService: FindsService,
         private toastService: ToastrService,
+        public modalService: ModalImagenService
     ) { }
 
     public get hasNext(): boolean {
@@ -84,6 +87,9 @@ export class UsersComponent implements OnInit {
         this.getUsers();
     }
 
+    /**
+     * Realiza la busqueda de usuarios.
+     */
     private searchListener(): void {
         const buscar = document.getElementById('txtBuscar');
 
@@ -168,13 +174,16 @@ export class UsersComponent implements OnInit {
         this.searching ? this.search() : this.getUsers();
     }
 
+    /**
+     * Borra un usuario.
+     * @param user el usuario a eliminar.
+     * @param i indice del arreglo de usuarios.
+     */
     public deleteUser(user: User, i: number): void {
 
         if (user.id === this.userId) {
             return;
         }
-
-
 
         Swal.fire({
             title: '¿Borrar usuario?',
@@ -198,6 +207,11 @@ export class UsersComponent implements OnInit {
         });
     }
 
+    /**
+     * Reactiva un usuario.
+     * @param user el usuario a reactivar.
+     * @param i indice del arreglo de usuarios.
+     */
     public activeUser(user: User, i: number): void {
 
         if (user.id === this.userId) {
@@ -226,12 +240,25 @@ export class UsersComponent implements OnInit {
         });
     }
 
+    /**
+     * Cambia el rol de un usuario.
+     * @param user el usuario a reactivar.
+     * @param i indice del arreglo de usuarios.
+     */
     public changeUserRole(user: User, i: number): void {
         this.userService.updateRoleUser(user.id, user.role)
             .subscribe(u => {
                 this.users[i] = u;
                 this.toastService.success('¡Role actualizado con exito!', '', { timeOut: 1000 });
             });
-    };
+    }
+
+    /**
+     * Cambia la imagen de un usuario.
+     * @param user el usuario a cambiar la imagen.
+     */
+    public changeImage(user: User): void {
+        this.modalService.showModal('users', user);
+    }
 
 }

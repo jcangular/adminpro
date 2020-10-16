@@ -1,0 +1,46 @@
+<div class="bg-modal animated fadeIn fast" [class.hidden-modal]="modalService.isHidden">
+
+    <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1"
+        style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel1">Cambiar imagen</h4>
+                    <button type="button" class="close" [disabled]="imageUpdating" [class.disabled]="imageUpdating"
+                        (click)="hide()">
+                        <span>×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="dropify-wrapper has-preview">
+
+                        <input #inputImage type="file" [disabled]="imageUpdating" id="input-file-now-custom-1"
+                            class="dropify" (change)="onFileChange($event.target.files)">
+
+                        <div class="dropify-preview" style="display: block;">
+                            <span class="dropify-render">
+                                <img *ngIf="!newImage" class="img-rounded" [src]="modalService.urlImage">
+                                <img *ngIf="newImage" class="img-rounded" [src]="newImage">
+                            </span>
+                            <div *ngIf="!imageUpdating" class="dropify-infos">
+                                <div class="dropify-infos-inner">
+                                    <p class="dropify-infos-message">Arrastre y suelte o haga clic para reemplazar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" [disabled]="imageUpdating"
+                        [class.disabled]="imageUpdating" (click)="hide()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" [disabled]="imageUpdating"
+                        [class.disabled]="imageUpdating" (click)="updateImage()">Actualizar foto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

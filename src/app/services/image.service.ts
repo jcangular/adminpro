@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IAPIError, IAPISetImage } from '../interfaces/api.interfaces';
 
@@ -14,11 +15,11 @@ export class ImageService {
 
     async updateImage(
         imageFile: File,
-        colection: 'users' | 'doctors' | 'hospitals',
+        collection: 'users' | 'doctors' | 'hospitals',
         id: string
     ): Promise<IAPIError | IAPISetImage> {
 
-        const url = `${baseURL}/images/${colection}/${id}`;
+        const url = `${baseURL}/images/${collection}/${id}`;
         const formData = new FormData();
         formData.append('image', imageFile);
 
@@ -30,5 +31,6 @@ export class ImageService {
             body: formData
         });
         return await response.json();
+
     }
 }

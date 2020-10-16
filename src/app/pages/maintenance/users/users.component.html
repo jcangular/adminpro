@@ -48,7 +48,8 @@
                         <tbody>
                             <tr *ngFor="let user of users; let i=index">
                                 <td class="text-center align-middle">
-                                    <img class="img-circle" width="50px" [src]="user.urlImage" [alt]="user.name">
+                                    <img (click)="changeImage(user)" class="img-circle pointer" width="50px"
+                                        [src]="user.urlImage" [alt]="user.name">
                                 </td>
                                 <td class="align-middle"> {{user.name}} </td>
                                 <td class="align-middle"> {{user.email}} </td>
