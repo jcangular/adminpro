@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 
 import { LoginForm } from '../interfaces/login.form';
 import { RegisterForm } from '../interfaces/register.form';
-import { IAPIGetUsers } from '../interfaces/api.interfaces';
+import { IAPIDeleteActiveUser, IAPIGetUsers, IAPIUpdateUser } from '../interfaces/api.interfaces';
 import { User } from '../models/user.model';
 
 const baseURL = environment.baseURL;
@@ -140,6 +140,35 @@ export class UserService {
                     this.user.updatedBy = u.updatedBy;
                     return;
                 })
+            );
+    }
+
+    public updateRoleUser(userId: string, role: 'ADMIN_ROLE' | 'USER_ROLE'): Observable<User> {
+        return this.http.put(`${baseURL}/users/role/${userId}`, { role }, this.headers)
+            .pipe(
+                map((result: IAPIUpdateUser) => User.createUserFromAPI(result.user))
+            );
+    }
+
+    /**
+     * Elimina (inactiva) un usario.
+     * @param userId id del usuario a eliminar.
+     */
+    public deleteUser(userId: string): Observable<User> {
+        return this.http.delete(`${baseURL}/users/${userId}`, this.headers)
+            .pipe(
+                map((result: IAPIDeleteActiveUser) => User.createUserFromAPI(result.user))
+            );
+    }
+
+    /**
+     * Reactiva un usario que fue borrado previamente.
+     * @param userId id del usuario a eliminar.
+     */
+    public activeUser(userId: string): Observable<User> {
+        return this.http.put(`${baseURL}/users/active/${userId}`, {}, this.headers)
+            .pipe(
+                map((result: IAPIDeleteActiveUser) => User.createUserFromAPI(result.user))
             );
     }
 

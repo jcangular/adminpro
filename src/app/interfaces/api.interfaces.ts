@@ -1,3 +1,5 @@
+import { User } from '../models/user.model';
+
 export interface IAPIResponse {
     ok: boolean;
     message?: string;
@@ -8,6 +10,8 @@ export interface IAPIError extends IAPIResponse {
     code: number;
     fieldErrors?: any;
     exception?: any;
+    status: number;
+    statusText?: string;
 }
 
 export interface IAPISetImage extends IAPIResponse {
@@ -27,7 +31,7 @@ export interface IAPIUser {
     name: string;
     email: string;
     id?: string;
-    role?: string;
+    role?: 'ADMIN_ROLE' | 'USER_ROLE';
     status?: string;
     google?: boolean;
     createdOn?: Date;
@@ -65,6 +69,15 @@ export interface IAPIGetUsers extends IAPIResponse {
     users: IAPIUser[];
     count: number;
     total: number;
+}
+
+export interface IAPIUpdateUser extends IAPIResponse {
+    user: User;
+}
+
+export interface IAPIDeleteActiveUser extends IAPIResponse {
+    user: User;
+    change: boolean;
 }
 
 export interface IAPIGetHospitals extends IAPIResponse {

@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { fromEvent, Observable, of } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { fromEvent, of } from 'rxjs';
 import { catchError, debounceTime, filter, map, pluck, switchMap, tap } from 'rxjs/operators';
-import { IAPIError, IAPIFindUsers } from '../../../interfaces/api.interfaces';
+import Swal from 'sweetalert2';
+
+import { IAPIError, IAPIFindUsers, IAPIResponse } from '../../../interfaces/api.interfaces';
 import { User } from '../../../models/user.model';
 import { FindsService } from '../../../services/finds.service';
 import { UserService } from '../../../services/user.service';
@@ -22,13 +25,12 @@ export class UsersComponent implements OnInit {
     public searching = false;
     public query = '';
 
-    public copyUsers: User[] = [];
-    public copyTotalUser = 0;
     public copySince = 0;
 
     constructor(
         private userService: UserService,
-        private findsService: FindsService
+        private findsService: FindsService,
+        private toastService: ToastrService,
     ) { }
 
     public get hasNext(): boolean {
@@ -44,15 +46,13 @@ export class UsersComponent implements OnInit {
         return `Mostrando ${this.since + 1} a ${to} de ${this.totalUser} usuarios`;
     }
 
+    public get userId(): string {
+        return this.userService.user.id;
+    }
+
     ngOnInit(): void {
         this.getUsers();
         this.searchListener();
-    }
-
-    private makeACopy(): void {
-        this.copyUsers = this.users;
-        this.copyTotalUser = this.totalUser;
-        this.copySince = this.since;
     }
 
     private getUsers(): void {
@@ -61,10 +61,13 @@ export class UsersComponent implements OnInit {
             ({ users, total }) => {
                 this.users = users.map(u => User.createUserFromAPI(u));
                 this.totalUser = total;
-                this.makeACopy();
-            }, (err) => {
-                console.log(err);
-            }, () => this.loading = false);
+                this.copySince = this.since;
+                this.loading = false;
+            }, (err: IAPIError) => {
+                console.warn(err);
+                this.toastService.error(err.message, '', { timeOut: 3000 });
+                this.loading = false;
+            });
     }
 
     private startSearch(termino: string): void {
@@ -75,11 +78,10 @@ export class UsersComponent implements OnInit {
     }
 
     private endSearch(): void {
-        this.users = this.copyUsers;
-        this.totalUser = this.copyTotalUser;
-        this.since = this.copySince;
         this.query = '';
         this.searching = false;
+        this.since = this.copySince;
+        this.getUsers();
     }
 
     private searchListener(): void {
@@ -89,34 +91,44 @@ export class UsersComponent implements OnInit {
             .pipe(
                 debounceTime<KeyboardEvent>(300),
                 pluck<KeyboardEvent, string>('target', 'value'),
+                filter(termino => termino !== this.query),
                 switchMap(termino => {
                     if (termino === null || termino.length === 0) {
-                        return of({ users: [], total: -1 });
+                        return of(false);
                     }
                     this.loading = true;
                     this.startSearch(termino);
-                    return this.findsService.findByCollection('users', termino, 0, this.limit)
-                        .pipe(
-                            map((data: IAPIFindUsers) =>
-                                ({ users: data.users, total: data.totalUsers })
-                            ),
-                            catchError(err => of({ users: [], total: 0 }))
-                        );
+                    return this.findsService.findByCollection('users', termino, 0, this.limit).pipe(
+                        map((result: IAPIFindUsers) => result),
+                        catchError(err => of(err as IAPIError))
+                    );
                 })
-            ).subscribe(data => {
-                if (data.total === -1) {
+            ).subscribe(result => {
+                if (!result) {
                     this.endSearch();
                     this.loading = false;
-                } else {
+                } else if ((result as IAPIResponse).ok === true) {
+                    const data = result as IAPIFindUsers;
                     this.users = data.users.map(u => User.createUserFromAPI(u));
-                    this.totalUser = data.total;
+                    this.totalUser = data.totalUsers;
+                    this.loading = false;
+                } else {
+                    const err = result as IAPIError;
+                    if (err.statusText) {
+                        this.users = [];
+                        this.totalUser = 0;
+                    } else {
+                        this.toastService.error(err.message, '', { timeOut: 3000 });
+                    }
                     this.loading = false;
                 }
             });
     }
 
+    /**
+     * Obtiene los usuarios para la páginación cuando se está buscando.
+     */
     private search(): void {
-        // NOTA: No sucede
         if (!this.searching) {
             return;
         }
@@ -126,10 +138,17 @@ export class UsersComponent implements OnInit {
                 this.users = data.users.map(u => User.createUserFromAPI(u));
                 this.totalUser = data.totalUsers;
                 this.loading = false;
+            }, (err: IAPIError) => {
+                this.since -= this.limit;
+                this.toastService.error(err.message, '', { timeOut: 3000 });
+                this.loading = false;
             });
 
     }
 
+    /**
+     * Obtiene los resultado de la siguiente página.
+     */
     public toNext(): void {
         if (!this.hasNext) {
             return;
@@ -138,6 +157,9 @@ export class UsersComponent implements OnInit {
         this.searching ? this.search() : this.getUsers();
     }
 
+    /**
+     * Obtiene los resultados de la página anterior.
+     */
     public toPrevious(): void {
         if (!this.hasPrevious) {
             return;
@@ -145,5 +167,71 @@ export class UsersComponent implements OnInit {
         this.since -= this.limit;
         this.searching ? this.search() : this.getUsers();
     }
+
+    public deleteUser(user: User, i: number): void {
+
+        if (user.id === this.userId) {
+            return;
+        }
+
+
+
+        Swal.fire({
+            title: '¿Borrar usuario?',
+            text: `Estás a punto de eliminar a ${user.name.toUpperCase()}.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#1e88e5',
+            confirmButtonText: 'Si, ¡eliminalo!',
+            cancelButtonColor: '#ef5350',
+            cancelButtonText: 'No'
+        }).then(result => {
+            if (result.isConfirmed) {
+                this.loading = true;
+                this.userService.deleteUser(user.id)
+                    .subscribe(u => {
+                        this.users[i] = u;
+                        this.loading = false;
+                        this.toastService.success('¡Usuario eliminado!', '', { timeOut: 1000 });
+                    });
+            }
+        });
+    }
+
+    public activeUser(user: User, i: number): void {
+
+        if (user.id === this.userId) {
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Activar usuario?',
+            text: `Estás a punto de activar a ${user.name.toUpperCase()}.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1e88e5',
+            confirmButtonText: 'Si, ¡activalo!',
+            cancelButtonColor: '#ef5350',
+            cancelButtonText: 'No'
+        }).then(result => {
+            if (result.isConfirmed) {
+                this.loading = true;
+                this.userService.activeUser(user.id)
+                    .subscribe(u => {
+                        this.users[i] = u;
+                        this.loading = false;
+                        this.toastService.success('¡Usuario activado!', '', { timeOut: 1000 });
+                    });
+            }
+        });
+    }
+
+    public changeUserRole(user: User, i: number): void {
+        this.userService.updateRoleUser(user.id, user.role)
+            .subscribe(u => {
+                this.users[i] = u;
+                this.toastService.success('¡Role actualizado con exito!', '', { timeOut: 1000 });
+            });
+    };
 
 }
