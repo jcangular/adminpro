@@ -1,178 +1,170 @@
-<div id="hospitalPage">
+<div class="row animated fadeIn fast">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
 
+                <input id="txtSearchHospital" type="text" class="form-control"
+                    placeholder="Buscar hospitales por nombre..." [disabled]="updating" [(ngModel)]="query"
+                    (ngModelChange)="onSearchChange($event)">
 
+            </div>
+        </div>
+    </div>
+</div>
 
-    <div class="row animated fadeIn fast">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
+<!-- Pantalla de carga -->
+<div *ngIf="loading" class="row animated fadeIn fast">
+    <div class="col-12">
+        <div class="alert alert-secondary text-center">
+            <h4 class="alert-heading">Cargando...</h4>
+            <i class="fa fa-spin fa-3x fa-spinner"></i>
+            <p class="mb-0">¡Espere por favor!</p>
+        </div>
+    </div>
+</div>
 
-                    <input id="txtBuscar" type="text" class="form-control" placeholder="Buscar hospitales por nombre..."
-                        [disabled]="updating">
+<div *ngIf="!loading" class="row animated fadeIn fast">
 
+    <div class="col-12">
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col text-left">
+                        <h4 class="card-title">Total de hospitales ({{totalHospitals}})</h4>
+                        <h6 *ngIf="!searching" class="card-subtitle">Hospitales registrados en la aplicación</h6>
+                        <h6 *ngIf="searching" class="card-subtitle">Hospitales encontrados en la aplicación</h6>
+                    </div>
+                    <div class="col text-right">
+                        <button class="btn btn-primary" [disabled]="updating" [class.disabled]="updating"
+                            (click)="adding = true">
+                            <i class="fa fa-hospital-o"></i>
+                            Agregar
+                        </button>
+                    </div>
                 </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered color-bordered-table muted-bordered-table">
+                        <thead>
+                            <tr>
+                                <th width="60px">Imagen</th>
+                                <th width="160px">Código</th>
+                                <th>Nombre</th>
+                                <th class="text-nowrap text-center" width="100px">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let hospital of hospitals; let i = index">
+                                <td class="text-center align-middle">
+                                    <img class="img-rounded" width="56px" [class.pointer]="hospital.isActive"
+                                        [src]="hospital.img | image:'hospitals'" [alt]="hospital.name"
+                                        (click)="hospital.isActive?changeImage(hospital):false">
+                                </td>
+                                <td class="align-middle">
+                                    <input type="text" class="form-control" placeholder="Código"
+                                        [class.is-invalid]="!hospital.isValidCode"
+                                        [readOnly]="hospital.isInactive || updating" [(ngModel)]="hospital.code">
+                                </td>
+                                <td class="align-middle">
+                                    <input type="text" class="form-control" placeholder="Nombre"
+                                        [class.is-invalid]="!hospital.isValidName"
+                                        [readOnly]="hospital.isInactive || updating" [(ngModel)]="hospital.name">
+                                </td>
+                                <td class="text-nowrap text-center align-middle">
+                                    <button class="btn btn-sm btn-primary" (click)="save(hospital, i)"
+                                        [disabled]="!hospital.wasChange || updating || !hospital.isValid"
+                                        [class.disabled]="!hospital.wasChange || updating || !hospital.isValid">
+                                        Guardar
+                                    </button>
+
+                                    <button *ngIf="hospital.isActive" class="btn btn-sm btn-danger ml-2"
+                                        [disabled]="updating" [class.disabled]="updating" (click)="delete(hospital, i)">
+                                        Borrar
+                                    </button>
+
+                                    <button *ngIf="hospital.isInactive" class="btn btn-sm btn-success ml-2"
+                                        [disabled]="updating" [class.disabled]="updating" (click)="active(hospital, i)">
+                                        Activar
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="row ">
+                    <div class="col-auto mr-auto text-left">
+                        <button class="btn btn-secondary" [disabled]="!hasPrevious" [class.disabled]="!hasPrevious"
+                            (click)="toPrevious()">
+                            <i class="fa  fa-caret-left"></i>
+                            Anteriores
+                        </button>
+                        <button class="btn btn-secondary ml-sm-2 mt-2 mt-sm-0" [disabled]="!hasNext"
+                            [class.disabled]="!hasNext" (click)="toNext()">
+                            Siguientes
+                            <i class="fa  fa-caret-right"></i>
+                        </button>
+                    </div>
+                    <div class="col-auto text-muted text-right align-middle">
+                        <span class="ml-2">{{ showingEntries }}</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+</div>
 
-    <div *ngIf="loading" class="row animated fadeIn fast">
-        <div class="col-12">
-            <div class="alert alert-secondary text-center">
-                <h4 class="alert-heading">Cargando...</h4>
-                <i class="fa fa-spin fa-3x fa-spinner"></i>
-                <p class="mb-0">¡Espere por favor!</p>
+
+<div *ngIf="adding" class="bg-modal modal fade show" tabindex="-1" role="dialog" style="display: block;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Agregar Hospital</h4>
+                <button type="button" class="close" aria-label="Close" [disabled]="updating" (click)="closeAddForm()">
+                    <span aria-hidden="true" [class.text-muted]="updating">×</span>
+                </button>
             </div>
-        </div>
-    </div>
-
-    <div *ngIf="!loading" class="row animated fadeIn fast">
-
-        <div class="col-12">
-            <div class="card">
-
-                <div class="card-body">
-
-                    <div class="row">
-                        <div class="col text-left">
-                            <h4 class="card-title">Total de hospitales ({{totalHospitals}})</h4>
-                            <h6 *ngIf="!searching" class="card-subtitle">Hospitales registrados en la aplicación</h6>
-                            <h6 *ngIf="searching" class="card-subtitle">Hospitales encontrados en la aplicación</h6>
+            <div class="modal-body">
+                <form [formGroup]="addForm">
+                    <div class="form-group">
+                        <label class="control-label">Código:</label>
+                        <input type="text" class="form-control" [class.is-invalid]="isInvalidCode || uniqueValueError"
+                            formControlName="code" required [readOnly]="updating">
+                        <div *ngIf="isInvalidCode" class="invalid-feedback">
+                            El código del hospital es requerido.
                         </div>
-                        <div class="col text-right">
-                            <button class="btn btn-primary" [disabled]="updating" [class.disabled]="updating"
-                                (click)="adding = true">
-                                <i class="fa fa-hospital-o"></i>
-                                Agregar
-                            </button>
+                        <div *ngIf="uniqueValueError" class="invalid-feedback">
+                            {{uniqueValueMessage}}
                         </div>
                     </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered color-bordered-table muted-bordered-table">
-                            <thead>
-                                <tr>
-                                    <th width="60px">Imagen</th>
-                                    <th width="160px">Código</th>
-                                    <th>Nombre</th>
-                                    <th class="text-nowrap text-center" width="100px">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let hospital of hospitals; let i = index">
-                                    <td class="text-center align-middle">
-                                        <img class="img-rounded" width="56px" [class.pointer]="hospital.isActive"
-                                            [src]="hospital.img | image:'hospitals'" [alt]="hospital.name"
-                                            (click)="hospital.isActive?changeImage(hospital):false">
-                                    </td>
-                                    <td class="align-middle">
-                                        <input type="text" class="form-control" placeholder="Código"
-                                            [class.is-invalid]="!hospital.isValidCode"
-                                            [readOnly]="hospital.isInactive || updating" [(ngModel)]="hospital.code">
-                                    </td>
-                                    <td class="align-middle">
-                                        <input type="text" class="form-control" placeholder="Nombre"
-                                            [class.is-invalid]="!hospital.isValidName"
-                                            [readOnly]="hospital.isInactive || updating" [(ngModel)]="hospital.name">
-                                    </td>
-                                    <td class="text-nowrap text-center align-middle">
-                                        <button class="btn btn-sm btn-primary" (click)="save(hospital, i)"
-                                            [disabled]="!hospital.wasChange || updating || !hospital.isValid"
-                                            [class.disabled]="!hospital.wasChange || updating || !hospital.isValid">
-                                            Guardar
-                                        </button>
-
-                                        <button *ngIf="hospital.isActive" class="btn btn-sm btn-danger ml-2"
-                                            [disabled]="updating" [class.disabled]="updating"
-                                            (click)="delete(hospital, i)">
-                                            Borrar
-                                        </button>
-
-                                        <button *ngIf="hospital.isInactive" class="btn btn-sm btn-success ml-2"
-                                            [disabled]="updating" [class.disabled]="updating"
-                                            (click)="active(hospital, i)">
-                                            Activar
-                                        </button>
-                                    </td>
-
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-
-                    <div class="row ">
-                        <div class="col-auto mr-auto text-left">
-                            <button class="btn btn-secondary" [disabled]="!hasPrevious" [class.disabled]="!hasPrevious"
-                                (click)="toPrevious()">
-                                <i class="fa  fa-caret-left"></i>
-                                Anteriores
-                            </button>
-                            <button class="btn btn-secondary ml-sm-2 mt-2 mt-sm-0" [disabled]="!hasNext"
-                                [class.disabled]="!hasNext" (click)="toNext()">
-                                Siguientes
-                                <i class="fa  fa-caret-right"></i>
-                            </button>
-                        </div>
-                        <div class="col-auto text-muted text-right align-middle">
-                            <span class="ml-2">{{ showingEntries }}</span>
+                    <div class="form-group">
+                        <label class="control-label">Nombre:</label>
+                        <input type="text" class="form-control" [class.is-invalid]="isInvalidName"
+                            formControlName="name" required [readOnly]="updating">
+                        <div *ngIf="isInvalidName" class="invalid-feedback">
+                            El nombre del hospital es requerido.
                         </div>
                     </div>
-
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" [disabled]="updating" [class.disabled]="updating"
+                    (click)="closeAddForm()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary"
+                    [disabled]="addForm.invalid || updating || uniqueValueError"
+                    [class.disabled]="addForm.invalid || updating || uniqueValueError" (click)="add()">
+                    <i *ngIf="updating" class="fa fa-spin fa-spinner"></i>
+                    Agregar
+                </button>
             </div>
         </div>
     </div>
-
-
-    <div *ngIf="adding" class="bg-modal modal fade show" tabindex="-1" role="dialog" style="display: block;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="exampleModalLabel1">Agregar Hospital</h4>
-                    <button type="button" class="close" aria-label="Close" [disabled]="updating"
-                        (click)="closeAddForm()">
-                        <span aria-hidden="true" [class.text-muted]="updating">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form [formGroup]="addForm">
-                        <div class="form-group">
-                            <label class="control-label">Código:</label>
-                            <input type="text" class="form-control"
-                                [class.is-invalid]="isInvalidCode || uniqueValueError" formControlName="code" required
-                                [readOnly]="updating">
-                            <div *ngIf="isInvalidCode" class="invalid-feedback">
-                                El código del hospital es requerido.
-                            </div>
-                            <div *ngIf="uniqueValueError" class="invalid-feedback">
-                                {{uniqueValueMessage}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Nombre:</label>
-                            <input type="text" class="form-control" [class.is-invalid]="isInvalidName"
-                                formControlName="name" required [readOnly]="updating">
-                            <div *ngIf="isInvalidName" class="invalid-feedback">
-                                El nombre del hospital es requerido.
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" [disabled]="updating" [class.disabled]="updating"
-                        (click)="closeAddForm()">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary"
-                        [disabled]="addForm.invalid || updating || uniqueValueError"
-                        [class.disabled]="addForm.invalid || updating || uniqueValueError" (click)="add()">
-                        <i *ngIf="updating" class="fa fa-spin fa-spinner"></i>
-                        Agregar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>

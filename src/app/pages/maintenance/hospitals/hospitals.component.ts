@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { fromEvent, Observable, Subscription } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, pluck, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { IAPIError } from '../../../interfaces/api.interfaces';
+import { IAPIError, IAPIFindHospitals } from '../../../interfaces/api.interfaces';
 import { Hospital } from '../../../models/hospital.model';
+import { FindsService } from '../../../services/finds.service';
 import { HospitalService } from '../../../services/hospital.service';
 import { ModalImagenService } from '../../../services/modal-imagen.service';
 
@@ -33,21 +34,53 @@ export class HospitalsComponent implements OnInit, OnDestroy {
     public uniqueValueError = false;
     public uniqueValueMessage = '';
     public codeChange$: Subscription;
+
     public metaKey = false;
     public metaKeydown$: Subscription;
     public metaKeyup$: Subscription;
 
+    private queryChanged: Subject<string> = new Subject<string>();
+    public query = '';
+
 
     constructor(
         private fb: FormBuilder,
-        private hospitalService: HospitalService,
         private toastService: ToastrService,
-        private modalService: ModalImagenService
+        private hospitalService: HospitalService,
+        private modalService: ModalImagenService,
+        private findsService: FindsService
     ) { }
+
+    public get hasNext(): boolean {
+        return this.since + this.limit < this.totalHospitals;
+    }
+
+    public get hasPrevious(): boolean {
+        return this.since - this.limit >= 0;
+    }
+
+    public get showingEntries(): string {
+        if (this.totalHospitals === 0) {
+            return `No hay resultados.`;
+        }
+        const to = `${Math.min(this.since + this.limit, this.totalHospitals)}`;
+        return `Mostrando ${this.since + 1} a ${to} de ${this.totalHospitals} hospitales.`;
+    }
+
+    public get isInvalidName(): boolean {
+        const field = this.addForm.get('name');
+        return field.invalid && field.touched;
+    }
+
+    public get isInvalidCode(): boolean {
+        const field = this.addForm.get('code');
+        return (field.invalid && field.touched);
+    }
 
     ngOnInit(): void {
         this.createAddForm();
         this.getHospitals();
+        this.searchListenerInit();
 
         this.metaKeydown$ = fromEvent(document, 'keydown')
             .pipe(filter((event: KeyboardEvent) => event.key === 'Meta'))
@@ -63,12 +96,16 @@ export class HospitalsComponent implements OnInit, OnDestroy {
         this.codeChange$.unsubscribe();
         this.metaKeydown$.unsubscribe();
         this.metaKeyup$.unsubscribe();
+        this.queryChanged.unsubscribe();
     }
 
+    /**
+     * Crea el formulario reactivo para la ventana donde se agregan nuevos hospitales.
+     */
     private createAddForm(): void {
         this.addForm = this.fb.group({
-            code: ['HTL-0007', [Validators.required, Validators.minLength(5)]],
-            name: ['Hospital del Carmen', [Validators.required, Validators.minLength(5)]],
+            code: ['', [Validators.required, Validators.minLength(4)]],
+            name: ['', [Validators.required, Validators.minLength(4)]],
         });
 
         this.codeChange$ = this.addForm.get('code').valueChanges
@@ -81,29 +118,6 @@ export class HospitalsComponent implements OnInit, OnDestroy {
 
     }
 
-    public get hasNext(): boolean {
-        return this.since + this.limit < this.totalHospitals;
-    }
-
-    public get hasPrevious(): boolean {
-        return this.since - this.limit >= 0;
-    }
-
-    public get showingEntries(): string {
-        const to = `${Math.min(this.since + this.limit, this.totalHospitals)}`;
-        return `Mostrando ${this.since + 1} a ${to} de ${this.totalHospitals} hospitales.`;
-    }
-
-    public get isInvalidName(): boolean {
-        const field = this.addForm.get('name');
-        return field.invalid && field.touched;
-    }
-
-    public get isInvalidCode(): boolean {
-        const field = this.addForm.get('code');
-        return (field.invalid && field.touched);
-    }
-
     /**
      * Obtiene el listado de hospitales según los parámetros de páginación.
      */
@@ -111,7 +125,7 @@ export class HospitalsComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.hospitalService.getHospitals(this.since, this.limit).subscribe(
             ({ hospitals, total }) => {
-                this.hospitals = hospitals.map(h => Hospital.transformHospital(h)); //.sort((a, b) => a.compare(b));
+                this.hospitals = hospitals.sort((a, b) => a.compare(b));
                 this.totalHospitals = total;
                 this.copySince = this.since;
                 this.loading = false;
@@ -123,6 +137,46 @@ export class HospitalsComponent implements OnInit, OnDestroy {
         );
     }
 
+    public onSearchChange(query: string): void {
+        this.queryChanged.next(query.trim());
+    }
+
+    private searchListenerInit(): void {
+        this.queryChanged
+            .pipe(
+                debounceTime(500),
+                distinctUntilChanged(),
+            ).subscribe(query => {
+                if (!query) {
+                    this.since = this.copySince;
+                    this.searching = false;
+                    this.getHospitals();
+                } else {
+                    this.since = 0;
+                    this.searchHospitals();
+                }
+            });
+    }
+
+    /**
+     * 
+     */
+    private searchHospitals(): void {
+        this.loading = true;
+        this.searching = true;
+        this.findsService.findByCollection('hospitals', this.query, this.since, this.limit)
+            .subscribe((result: IAPIFindHospitals) => {
+                this.hospitals = result.hospitals.map(h => Hospital.transformHospital(h));
+                this.totalHospitals = result.totalHospitals;
+                this.loading = false;
+            }, (err) => {
+                this.loading = false;
+            });
+    }
+
+    /**
+     * Agrega un hospital.
+     */
     public add(): void {
         this.updating = true;
         const code = this.addForm.get('code').value;
@@ -134,7 +188,7 @@ export class HospitalsComponent implements OnInit, OnDestroy {
                 this.adding = false;
                 this.updating = false;
                 this.addForm.reset();
-                this.toastService.success('¡Hospital creado!');
+                this.toastService.success('¡Hospital creado existosamente!');
             }, (err) => {
                 const error: IAPIError = err.error;
                 if (error.type === 'UniqueValue') {
@@ -145,6 +199,9 @@ export class HospitalsComponent implements OnInit, OnDestroy {
             });
     }
 
+    /**
+     * Cierra la ventana y limpia el formulario donde se agrega un hospital.
+     */
     public closeAddForm(): void {
         this.adding = false;
         this.uniqueValueError = false;
@@ -152,6 +209,11 @@ export class HospitalsComponent implements OnInit, OnDestroy {
         this.addForm.reset();
     }
 
+    /**
+     * Actualiza el código o nombre del hospital.
+     * @param hospital El hospital a actualizar.
+     * @param i índice (posición) del hospital en el arreglo.
+     */
     public save(hospital: Hospital, i: number): void {
         this.updating = true;
         this.hospitalService.updateHospital(hospital)
@@ -169,6 +231,12 @@ export class HospitalsComponent implements OnInit, OnDestroy {
             });
     }
 
+    /**
+     * Elimina (inactiva) el hospital seleccionado.
+     * Nota: Si se tiene presionado la tecla `Meta`, el hospital es borrado por completo.
+     * @param hospital El hospital a eliminar.
+     * @param i índice (posición) del hospital en el arreglo.
+     */
     public async delete(hospital: Hospital, i: number): Promise<void> {
         this.updating = true;
         const permanent = this.metaKey;
@@ -200,10 +268,11 @@ export class HospitalsComponent implements OnInit, OnDestroy {
         });
     }
 
-    public clickMe(): void {
-        console.log(`click!!!`);
-    }
-
+    /**
+     * Reactiva el hospital seleccionado.
+     * @param hospital El hospital a reactivar después de ser borrado (inactivado).
+     * @param i índice (posición) del hospital en el arreglo.
+     */
     public active(hospital: Hospital, i: number): void {
         this.updating = true;
         this.hospitalService.activeHospital(hospital.id)
@@ -222,8 +291,7 @@ export class HospitalsComponent implements OnInit, OnDestroy {
             return;
         }
         this.since += this.limit;
-        // this.searching ? this.search() : this.getUsers();
-        this.getHospitals();
+        this.searching ? this.searchHospitals() : this.getHospitals();
     }
 
     /**
@@ -234,8 +302,7 @@ export class HospitalsComponent implements OnInit, OnDestroy {
             return;
         }
         this.since -= this.limit;
-        // this.searching ? this.search() : this.getUsers();
-        this.getHospitals();
+        this.searching ? this.searchHospitals() : this.getHospitals();
     }
 
     /**

@@ -100,7 +100,7 @@ export interface IAPIFindUsers extends IAPIResponse {
 }
 
 export interface IAPIFindHospitals extends IAPIResponse {
-    users: IAPIHospital[];
+    hospitals: IAPIHospital[];
     totalHospitals: number;
 }
 export interface IAPIFindDoctors extends IAPIResponse {

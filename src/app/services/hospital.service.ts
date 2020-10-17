@@ -36,12 +36,17 @@ export class HospitalService {
      * @param since desde que número de registro.
      * @param limit cantidad de hospitales en la lista.
      */
-    public getHospitals(since: number = 0, limit: number = 0): Observable<IAPIGetHospitals> {
+    public getHospitals(since: number = 0, limit: number = 0): Observable<{ hospitals: Hospital[], total: number; }> {
         return this.http
             .get(`${baseURL}/hospitals?from=${since}&limit=${limit}`, this.headers)
             .pipe(
                 // delay(500),
-                map((result: IAPIGetHospitals) => result)
+                map((result: IAPIGetHospitals) => (
+                    {
+                        hospitals: result.hospitals.map(h => Hospital.transformHospital(h)),
+                        total: result.total
+                    }
+                ))
             );
     }
 
