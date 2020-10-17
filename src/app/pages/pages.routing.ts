@@ -14,6 +14,7 @@ import { SettingsComponent } from './settings/settings.component';
 
 // Mantenimientos
 import { UsersComponent } from './maintenance/users/users.component';
+import { HospitalsComponent } from './maintenance/hospitals/hospitals.component';
 
 
 const routes: Routes = [{
@@ -30,7 +31,8 @@ const routes: Routes = [{
         { path: 'profile', component: ProfileComponent, data: { title: 'Mi Perfil' } },
 
         // Mantenimientos
-        { path: 'users', component: UsersComponent, data: { title: 'Usuarios' } },
+        { path: 'users', component: UsersComponent, data: { title: 'Administración de Usuarios' } },
+        { path: 'hospitals', component: HospitalsComponent, data: { title: 'Administración de Hospitales' } },
     ]
 }];
 

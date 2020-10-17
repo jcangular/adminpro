@@ -1,3 +1,4 @@
+import { Hospital } from '../models/hospital.model';
 import { User } from '../models/user.model';
 
 export interface IAPIResponse {
@@ -49,6 +50,7 @@ export interface IAPIHospital {
     createdOn?: Date;
     updatedBy?: IAPIUserRef;
     updatedOn?: Date;
+    deletedOn?: Date;
     img?: string;
 }
 
@@ -84,6 +86,12 @@ export interface IAPIGetHospitals extends IAPIResponse {
     hospitals: IAPIHospital[];
     count: number;
     total: number;
+}
+
+export interface IAPICRUDHospital extends IAPIResponse {
+    hospital: IAPIHospital;
+    change?: boolean;
+    deleted?: boolean;
 }
 
 export interface IAPIFindUsers extends IAPIResponse {

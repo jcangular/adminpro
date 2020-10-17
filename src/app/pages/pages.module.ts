@@ -8,6 +8,7 @@ import { ToastrModule } from 'ngx-toastr';
 // Módulos de la aplicación.
 import { SharedModule } from '../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
+import { PipesModule } from '../pipes/pipes.module';
 
 import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -18,6 +19,8 @@ import { PromesasComponent } from './promesas/promesas.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
 import { ProfileComponent } from './profile/profile.component';
 import { UsersComponent } from './maintenance/users/users.component';
+import { HospitalsComponent } from './maintenance/hospitals/hospitals.component';
+import { DoctorsComponent } from './maintenance/doctors/doctors.component';
 
 
 @NgModule({
@@ -31,6 +34,8 @@ import { UsersComponent } from './maintenance/users/users.component';
         RxjsComponent,
         ProfileComponent,
         UsersComponent,
+        HospitalsComponent,
+        DoctorsComponent,
     ],
     exports: [
         PagesComponent,
@@ -54,7 +59,8 @@ import { UsersComponent } from './maintenance/users/users.component';
             closeButton: true
         }),
         SharedModule,
-        ComponentsModule
+        ComponentsModule,
+        PipesModule
     ]
 })
 export class PagesModule { }

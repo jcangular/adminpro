@@ -36,8 +36,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" [disabled]="imageUpdating"
                         [class.disabled]="imageUpdating" (click)="hide()">Cancelar</button>
-                    <button type="button" class="btn btn-primary" [disabled]="imageUpdating"
-                        [class.disabled]="imageUpdating" (click)="updateImage()">Actualizar foto</button>
+                    <button type="button" class="btn btn-primary" [disabled]="imageUpdating || !newImage"
+                        [class.disabled]="imageUpdating || !newImage" (click)="updateImage()">Actualizar foto</button>
                 </div>
             </div>
         </div>

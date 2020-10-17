@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { Hospital } from '../models/hospital.model';
 
 import { User } from '../models/user.model';
 
@@ -11,7 +12,7 @@ const baseURL = environment.baseURL;
 export class ModalImagenService {
 
     private modalActive = false;
-    public entidad: User;
+    public entidad: User | Hospital;
     public collection: 'users' | 'doctors' | 'hospitals';
 
     constructor() { }
@@ -37,7 +38,7 @@ export class ModalImagenService {
      */
     public showModal(
         collection: 'users' | 'doctors' | 'hospitals',
-        entidad: User
+        entidad: User | Hospital
     ): void {
         console.log(`ModalImagenService[showModal]`);
         this.modalActive = true;
@@ -49,7 +50,7 @@ export class ModalImagenService {
      * Oculta el modal de actualización de la imagen.
      */
     public hideModal(): void {
-        console.log(`ModalImagenService[showModal]`);
+        console.log(`ModalImagenService[hideModal]`);
         this.entidad = null;
         this.collection = null;
         this.modalActive = false;
