@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { fromEvent, of } from 'rxjs';
+import { fromEvent, of, Subscription } from 'rxjs';
 import { catchError, debounceTime, filter, map, pluck, switchMap, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
@@ -17,7 +17,7 @@ import { UserService } from '../../../services/user.service';
     styles: [
     ]
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
 
     public users: User[] = [];
     public totalUser = 0;
@@ -28,6 +28,8 @@ export class UsersComponent implements OnInit {
     public query = '';
 
     public copySince = 0;
+
+    public searchChange$: Subscription;
 
     constructor(
         private userService: UserService,
@@ -56,6 +58,10 @@ export class UsersComponent implements OnInit {
     ngOnInit(): void {
         this.getUsers();
         this.searchListener();
+    }
+
+    ngOnDestroy(): void {
+        this.searchChange$.unsubscribe();
     }
 
     private getUsers(): void {
@@ -91,9 +97,9 @@ export class UsersComponent implements OnInit {
      * Realiza la busqueda de usuarios.
      */
     private searchListener(): void {
-        const buscar = document.getElementById('txtBuscar');
+        const buscar = document.getElementById('txtSearchUser');
 
-        fromEvent<KeyboardEvent>(buscar, 'keyup')
+        this.searchChange$ = fromEvent<KeyboardEvent>(buscar, 'keyup')
             .pipe(
                 debounceTime<KeyboardEvent>(300),
                 pluck<KeyboardEvent, string>('target', 'value'),
