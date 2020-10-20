@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
                         icon: 'error',
                         title: '¡Error al iniciar sessión!',
                         text: error.message,
-                        onAfterClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
+                        didClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
                     });
                 });
     }

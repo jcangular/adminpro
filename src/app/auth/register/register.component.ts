@@ -90,7 +90,7 @@ export class RegisterComponent implements OnInit {
                     icon: 'error',
                     title: '¡Error al registrarte!',
                     text: error.error.msg,
-                    onAfterClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
+                    didClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
                 });
             });
     }
