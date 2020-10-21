@@ -16,7 +16,6 @@ export class SettingsService {
     constructor() {
         this.themeColor = this.checkTheme(localStorage.getItem('themeColor'));
         this.darkMode = (localStorage.getItem('darkMode') === 'true' ? true : false);
-        // console.log(`SettingsService: dark mode [${this.darkMode}]`);
         this.loadTheme();
     }
 

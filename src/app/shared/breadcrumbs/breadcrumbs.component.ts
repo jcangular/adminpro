@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ActivationEnd, Router } from '@angular/router';
+import { ActivationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 
@@ -27,7 +27,6 @@ export class BreadcrumbsComponent implements OnDestroy {
             .pipe(
                 filter(event => event instanceof ActivationEnd),
                 filter((event: ActivationEnd) => event.snapshot.firstChild === null),
-                // tap(console.log),
                 map<ActivationEnd, any[]>(event => [event.snapshot.data, event.snapshot.url])
             )
             .subscribe((info) => {

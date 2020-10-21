@@ -17,6 +17,7 @@ import { UsersComponent } from './maintenance/users/users.component';
 import { HospitalsComponent } from './maintenance/hospitals/hospitals.component';
 import { DoctorsComponent } from './maintenance/doctors/doctors.component';
 import { DoctorComponent } from './maintenance/doctors/doctor.component';
+import { GlobalSearchComponent } from './global-search/global-search.component';
 
 
 const routes: Routes = [{
@@ -25,18 +26,19 @@ const routes: Routes = [{
     canActivate: [AuthGuard],
     children: [
         { path: '', component: DashboardComponent, data: { title: 'Dashboard' } },
-        { path: 'progress', component: ProgressComponent, data: { title: 'Barra de Progreso' } },
         { path: 'grafica1', component: Grafica1Component, data: { title: 'Gráficas #1' } },
-        { path: 'settings', component: SettingsComponent, data: { title: 'Configuración' } },
+        { path: 'profile', component: ProfileComponent, data: { title: 'Mi Perfil' } },
+        { path: 'progress', component: ProgressComponent, data: { title: 'Barra de Progreso' } },
         { path: 'promesas', component: PromesasComponent, data: { title: 'Promesas' } },
         { path: 'rxjs', component: RxjsComponent, data: { title: 'RxJs' } },
-        { path: 'profile', component: ProfileComponent, data: { title: 'Mi Perfil' } },
+        { path: 'search/:query', component: GlobalSearchComponent, data: { title: 'Búsqueda Global' } },
+        { path: 'settings', component: SettingsComponent, data: { title: 'Configuración' } },
 
         // Mantenimientos
-        { path: 'users', component: UsersComponent, data: { title: 'Administración de Usuarios' } },
-        { path: 'hospitals', component: HospitalsComponent, data: { title: 'Administración de Hospitales' } },
         { path: 'doctors', component: DoctorsComponent, data: { title: 'Administración de Doctores' } },
         { path: 'doctors/:id', component: DoctorComponent, data: { title: 'Administración de Doctores' } },
+        { path: 'hospitals', component: HospitalsComponent, data: { title: 'Administración de Hospitales' } },
+        { path: 'users', component: UsersComponent, data: { title: 'Administración de Usuarios' } },
     ]
 }];
 

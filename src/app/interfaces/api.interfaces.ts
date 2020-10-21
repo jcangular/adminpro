@@ -1,5 +1,5 @@
-import { Hospital } from '../models/hospital.model';
-import { User } from '../models/user.model';
+import { Hospital } from '@models/hospital.model';
+import { User } from '@models/user.model';
 
 export interface IAPIResponse {
     ok: boolean;
@@ -134,3 +134,11 @@ export interface IAPIFindDoctors extends IAPIResponse {
     totalDoctors: number;
 }
 
+export interface IAPIFindAll extends IAPIResponse {
+    users: IAPIUser[];
+    totalUsers: number;
+    hospitals: IAPIHospital[];
+    totalHospitals: number;
+    doctors: IAPIDoctor[];
+    totalDoctors: number;
+}

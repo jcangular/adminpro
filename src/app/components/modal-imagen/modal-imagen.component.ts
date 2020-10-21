@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { IAPISetImage } from '../../interfaces/api.interfaces';
-import { User } from '../../models/user.model';
-import { ImageService } from '../../services/image.service';
-import { ModalImagenService } from '../../services/modal-imagen.service';
+
+import { IAPISetImage } from '@interfaces/api.interfaces';
+import { User } from '@models/user.model';
+import { ImageService } from '@services/image.service';
+import { ModalImagenService } from '@services/modal-imagen.service';
 
 @Component({
     selector: 'app-modal-imagen',
@@ -67,13 +68,12 @@ export class ModalImagenComponent implements OnInit {
                     this.toastService.info('Imagen actualizada!');
                     this.hide();
                 } else {
-                    console.log(resp);
                     this.toastService.error('¡Error al actualizar imagen!');
                     this.imageUpdating = false;
                 }
 
             }).catch(err => {
-                console.log(err);
+                console.warn(err);
             });
     }
 

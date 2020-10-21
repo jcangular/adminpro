@@ -1,16 +1,16 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 import { ToastrService } from 'ngx-toastr';
 import { Notyf } from 'notyf';
 import Swal from 'sweetalert2';
 
-import { User } from '../../models/user.model';
-import { ImageService } from '../../services/image.service';
-import { UserService } from '../../services/user.service';
-import { IAPIError, IAPISetImage } from '../../interfaces/api.interfaces';
-import { Observable, Subscription } from 'rxjs';
+import { User } from '@models/user.model';
+import { ImageService } from '@services/image.service';
+import { UserService } from '@services/user.service';
+import { IAPIError, IAPISetImage } from '@interfaces/api.interfaces';
 
 const datePipe: DatePipe = new DatePipe('es-HN');
 const MAILREGEXP = '^[a-z0-9]([._\-]{0,1}[a-z0-9])*@[a-z0-9\-]+([.][a-z]{2,3}){1,3}$';
@@ -91,7 +91,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 const { name, email, role } = changes;
                 this.profileWasChange = false;
                 if (name !== this.user.name) {
-                    console.log('cambio en el nombre');
                     this.profileWasChange = true;
                 } else if (email !== this.user.email) {
                     this.profileWasChange = true;
@@ -147,7 +146,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 }
                 this.restoreImage();
             }).catch(err => {
-                console.log(err);
+                console.warn(err);
                 this.imageUpdating = false;
             });
     }

@@ -22,6 +22,7 @@ import { UsersComponent } from './maintenance/users/users.component';
 import { HospitalsComponent } from './maintenance/hospitals/hospitals.component';
 import { DoctorsComponent } from './maintenance/doctors/doctors.component';
 import { DoctorComponent } from './maintenance/doctors/doctor.component';
+import { GlobalSearchComponent } from './global-search/global-search.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { DoctorComponent } from './maintenance/doctors/doctor.component';
         HospitalsComponent,
         DoctorsComponent,
         DoctorComponent,
+        GlobalSearchComponent,
     ],
     exports: [
         PagesComponent,
@@ -45,6 +47,7 @@ import { DoctorComponent } from './maintenance/doctors/doctor.component';
         ProgressComponent,
         Grafica1Component,
         SettingsComponent,
+        GlobalSearchComponent
     ],
     imports: [
         CommonModule,
