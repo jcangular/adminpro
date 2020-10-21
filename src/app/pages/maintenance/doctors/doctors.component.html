@@ -1,0 +1,114 @@
+<div class="row animated fadeIn fast">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <input id="txtSearchDoctor" type="text" class="form-control" placeholder="Buscar doctores por nombre..."
+                    [disabled]="updating" [(ngModel)]="query" (ngModelChange)="onSearchChange($event)">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pantalla de carga -->
+<div *ngIf="loading" class="row animated fadeIn fast">
+    <div class="col-12">
+        <div class="alert alert-secondary text-center">
+            <h4 class="alert-heading">Cargando...</h4>
+            <i class="fa fa-spin fa-3x fa-spinner"></i>
+            <p class="mb-0">¡Espere por favor!</p>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!loading" class="row animated fadeIn fast">
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col text-left">
+                        <h4 class="card-title">Total de doctores ({{totalDoctors}})</h4>
+                        <h6 *ngIf="!searching" class="card-subtitle">Doctores registrados en la aplicación</h6>
+                        <h6 *ngIf="searching" class="card-subtitle">Doctores encontrados en la aplicación</h6>
+                    </div>
+                    <div class="col text-right">
+                        <button class="btn btn-primary" [routerLink]="['.','new']">
+                            <i class="fa fa-user-md"></i>
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered color-bordered-table muted-bordered-table">
+                        <thead>
+                            <tr>
+                                <th width="60px">Imagen</th>
+                                <th width="160px">Código</th>
+                                <th>Nombre</th>
+                                <th>Hospital</th>
+                                <th class="text-nowrap text-center" width="100px">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let doctor of doctors; let i = index">
+
+                                <td class="text-center align-middle">
+                                    <img class="img-rounded" width="56px" [class.pointer]="doctor.isActive"
+                                        [src]="doctor.img | image:'doctors'" [alt]="doctor.name"
+                                        (click)="doctor.isActive?changeImage(doctor):false">
+                                </td>
+
+                                <td class="align-middle">{{doctor.code}}</td>
+
+                                <td class="align-middle">{{doctor.name}} </td>
+
+                                <td class="align-middle">{{ doctor.hospital.name }}</td>
+
+                                <td class="text-nowrap text-center align-middle">
+
+                                    <button class="btn btn-sm btn-primary" [routerLink]="['.',doctor.id]">
+                                        Editar
+                                    </button>
+
+                                    <button *ngIf="doctor.isActive" class="btn btn-sm btn-danger ml-2"
+                                        [disabled]="updating" [class.disabled]="updating" (click)="delete(doctor, i)">
+                                        Borrar
+                                    </button>
+
+                                    <button *ngIf="doctor.isInactive" class="btn btn-sm btn-success ml-2"
+                                        [disabled]="updating" [class.disabled]="updating" (click)="active(doctor, i)">
+                                        Activar
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row ">
+                    <div class="col-auto mr-auto text-left">
+                        <button class="btn btn-secondary" [disabled]="!hasPrevious" [class.disabled]="!hasPrevious"
+                            (click)="toPrevious()">
+                            <i class="fa  fa-caret-left"></i>
+                            Anteriores
+                        </button>
+                        <button class="btn btn-secondary ml-sm-2 mt-2 mt-sm-0" [disabled]="!hasNext"
+                            [class.disabled]="!hasNext" (click)="toNext()">
+                            Siguientes
+                            <i class="fa  fa-caret-right"></i>
+                        </button>
+                    </div>
+                    <div class="col-auto text-muted text-right align-middle">
+                        <span class="ml-2">{{ showingEntries }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

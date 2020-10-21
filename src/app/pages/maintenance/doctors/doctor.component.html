@@ -1,0 +1,123 @@
+<!-- Pantalla de carga -->
+<div *ngIf="loading" class="row animated fadeIn fast">
+    <div class="col-12">
+        <div class="alert alert-secondary text-center">
+            <h4 class="alert-heading">Cargando...</h4>
+            <i class="fa fa-spin fa-3x fa-spinner"></i>
+            <p class="mb-0">¡Espere por favor!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario -->
+<div *ngIf="!loading" class="row">
+    <div class="col-md-7 animated fadeIn fast">
+
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Doctor
+                    <small *ngIf="doctor && doctor.isInactive" class="badge badge-danger">Inactivo</small>
+                </h4>
+                <h6 class="card-subtitle">{{title}}</h6>
+                <!-- <h6 class="card-subtitle">made with bootstrap elements</h6> -->
+
+                <form class="form-horizontal p-t-20" [formGroup]="doctorForm">
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label">Imagen</label>
+                        <div class="col-sm-9">
+                            <img class="img-rounded doctorImage" [src]="doctor?.img | image:'doctors'" alt=""
+                                width="100px" [class.pointer]="doctor && doctor.isActive"
+                                [class.noChangeImage]="doctor && doctor.isInactive"
+                                (click)="doctor && doctor.isActive ?changeImage():false">
+                        </div>
+
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label">Código</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-stethoscope"></i></div>
+                                <input type="text" class="form-control" placeholder="Código del doctor"
+                                    formControlName="code" [class.is-invalid]="isInvalidCode || uniqueValueError">
+                            </div>
+                            <small *ngIf="isInvalidCode" class="form-text text-danger">
+                                <i class="fa fa-exclamation-circle"></i>
+                                El código del doctor es requerido.
+                            </small>
+                            <small *ngIf="uniqueValueError" class="form-text text-danger">
+                                <i class="fa fa-exclamation-circle"></i>
+                                {{uniqueValueMessage}}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label">Nombre</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user-md"></i></div>
+                                <input type="text" class="form-control" placeholder="Nombre del doctor"
+                                    formControlName="name" [class.is-invalid]="isInvalidName">
+                            </div>
+                            <small *ngIf="isInvalidName" class="form-text text-danger">
+                                <i class="fa fa-exclamation-circle"></i>
+                                El nombre del doctor es requerido.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label">Hospital</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-hospital-o"></i></div>
+                                <select class="form-control" formControlName="hospitalId">
+                                    <option value="">Seleccione Hospital</option>
+                                    <option *ngFor="let hospital of hospitals" [value]="hospital.id">
+                                        {{hospital.name}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="card-footer bg-transparent">
+                <button type="submit" class="btn btn-primary"
+                    [disabled]="doctorForm.invalid || saving || (doctor && doctor.isInactive)"
+                    [class.disabled]="doctorForm.invalid || saving || (doctor && doctor.isInactive)"
+                    (click)="save()">Guardar</button>
+
+                <button [routerLink]="'/dashboard/doctors'" class="btn btn-inverse ml-2">Regresar</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Foto del hospital -->
+    <div *ngIf="hospitalSelected" class="col-md-5 animated fadeIn fast">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Asignado al</h4>
+                <h6 class="card-subtitle">{{ hospitalSelected?.name || 'Seleccione Hospital' }}</h6>
+                <div class="text-center">
+                    <img class="img-thumbnail" width="300px" [src]="hospitalSelected?.img | image:'hospitals'"
+                        [alt]="hospitalSelected?.name" [class.noChangeImage]="doctor && doctor.isInactive">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <small *ngIf="doctor && doctor.updatedOn" class="text-muted">
+            Última actualización: {{doctor?.updatedOn | date:'d/MM/y h:mm:ss a'}}
+        </small>
+    </div>
+</div>

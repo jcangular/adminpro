@@ -28,6 +28,13 @@ export interface IAPIUserRef {
     img?: string;
 }
 
+export interface IAPIHospitalRef {
+    id: string;
+    name: string;
+    status: string;
+    img?: string;
+}
+
 export interface IAPIUser {
     name: string;
     email: string;
@@ -59,11 +66,12 @@ export interface IAPIDoctor {
     code: string;
     name: string;
     status: string;
-    hospital?: any;
+    hospital?: IAPIHospitalRef;
     createdBy?: IAPIUserRef;
     createdOn?: Date;
     updatedBy?: IAPIUserRef;
     updatedOn?: Date;
+    deletedOn?: Date;
     img?: string;
 }
 
@@ -94,6 +102,24 @@ export interface IAPICRUDHospital extends IAPIResponse {
     deleted?: boolean;
 }
 
+export interface IAPIGetDoctors extends IAPIResponse {
+    doctors: IAPIDoctor[];
+    count: number;
+    total: number;
+}
+
+export interface IAPIGetDoctor extends IAPIResponse {
+    doctor: IAPIDoctor;
+}
+
+export interface IAPICRUDDoctor extends IAPIResponse {
+    doctor: IAPIDoctor;
+    change?: boolean;
+    deleted?: boolean;
+}
+
+
+
 export interface IAPIFindUsers extends IAPIResponse {
     users: IAPIUser[];
     totalUsers: number;
@@ -104,7 +130,7 @@ export interface IAPIFindHospitals extends IAPIResponse {
     totalHospitals: number;
 }
 export interface IAPIFindDoctors extends IAPIResponse {
-    users: IAPIDoctor[];
+    doctors: IAPIDoctor[];
     totalDoctors: number;
 }
 
