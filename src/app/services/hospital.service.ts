@@ -3,32 +3,20 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { ApiService, baseURL } from './api.model';
 import { IAPICRUDHospital, IAPIGetHospitals } from '../interfaces/api.interfaces';
 import { Hospital } from '../models/hospital.model';
 
-const baseURL = environment.baseURL;
 
 @Injectable({
     providedIn: 'root'
 })
-export class HospitalService {
+export class HospitalService extends ApiService {
 
     constructor(
         private http: HttpClient
-    ) { }
-
-    /**
-     * Devuelve el token de la sesión activa.
-     */
-    private get token(): string {
-        return sessionStorage.getItem('token') || '';
-    }
-
-    private get headers(): { headers: { 'x-token': string; }; } {
-        return {
-            headers: { 'x-token': this.token }
-        };
+    ) {
+        super();
     }
 
     /**
@@ -38,7 +26,7 @@ export class HospitalService {
      */
     public getHospitals(since: number = 0, limit: number = 0): Observable<{ hospitals: Hospital[], total: number; }> {
         return this.http
-            .get(`${baseURL}/hospitals?from=${since}&limit=${limit}`, this.headers)
+            .get(`${baseURL}/hospitals?from=${since}&limit=${limit}`, this.options)
             .pipe(
                 // delay(500),
                 map((result: IAPIGetHospitals) => (
@@ -52,10 +40,11 @@ export class HospitalService {
 
     /**
      * Crea un hospital y devuelve el resultado.
-     * @param data contiene el código y nombre del hospital.
+     * @param code El código del hospital.
+     * @param name El nombre del hospital.
      */
     public createHospital(code: string, name: string): Observable<Hospital> {
-        return this.http.post(`${baseURL}/hospitals`, { code, name }, this.headers)
+        return this.http.post(`${baseURL}/hospitals`, { code, name }, this.options)
             .pipe(
                 // delay(5000),
                 map((result: IAPICRUDHospital) => Hospital.transformHospital(result.hospital))
@@ -63,34 +52,35 @@ export class HospitalService {
     }
 
     /**
-     * Crea un hospital y devuelve el resultado.
-     * @param data contiene el código y nombre del hospital.
+     * Actualiza un hospital y devuelve el resultado.
+     * @param hospital contiene el código y nombre del hospital.
      */
     public updateHospital(hospital: Hospital): Observable<Hospital> {
         const { code, name, id } = hospital;
-        return this.http.put(`${baseURL}/hospitals/${id}`, { code, name }, this.headers)
+        return this.http.put(`${baseURL}/hospitals/${id}`, { code, name }, this.options)
             .pipe(
                 map((result: IAPICRUDHospital) => Hospital.transformHospital(result.hospital))
             );
     }
 
     /**
-     * Reactiva un hospital que fue borrado previamente.
-     * @param data contiene el código y nombre del hospital.
+     * Reactiva un hospital que fue inactivado previamente.
+     * @param id El id del hospital.
      */
     public activeHospital(id: string): Observable<Hospital> {
-        return this.http.put(`${baseURL}/hospitals/active/${id}`, {}, this.headers)
+        return this.http.put(`${baseURL}/hospitals/active/${id}`, {}, this.options)
             .pipe(
                 map((result: IAPICRUDHospital) => Hospital.transformHospital(result.hospital))
             );
     }
 
     /**
-     * Elimina (inactiva) un hospital.
-     * @param data contiene el código y nombre del hospital.
+     * Elimina o inactiva un hospital.
+     * @param id El id del hospital.
+     * @param permanent Indica si el hospital debe ser eliminado o sólo cambiar a estado inactivo.
      */
     public deleteHospital(id: string, permanent: boolean = false): Observable<{ hospital: Hospital; deleted: boolean; }> {
-        const options = this.headers;
+        const options = this.options;
         if (permanent) {
             options.headers['x-permanent'] = 'true';
         }

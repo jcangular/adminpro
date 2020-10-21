@@ -4,18 +4,16 @@ import { fromEvent, of, Subscription } from 'rxjs';
 import { catchError, debounceTime, filter, map, pluck, switchMap, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { User } from '../../../models/user.model';
-import { IAPIError, IAPIFindUsers, IAPIResponse } from '../../../interfaces/api.interfaces';
-
-import { FindsService } from '../../../services/finds.service';
-import { ModalImagenService } from '../../../services/modal-imagen.service';
-import { UserService } from '../../../services/user.service';
+import { User } from '@models/user.model';
+import { IAPIError, IAPIFindUsers, IAPIResponse } from '@interfaces/api.interfaces';
+import { FindsService } from '@services/finds.service';
+import { ModalImagenService } from '@services/modal-imagen.service';
+import { UserService } from '@services/user.service';
 
 @Component({
     selector: 'app-users',
     templateUrl: './users.component.html',
-    styles: [
-    ]
+    styles: []
 })
 export class UsersComponent implements OnInit, OnDestroy {
 

@@ -72,13 +72,13 @@
                                 </td>
                                 <td class="text-nowrap text-center align-middle">
 
-                                    <button class="btn btn-sm btn-outline-danger" *ngIf="user.status === 'A'"
+                                    <button class="btn btn-sm btn-danger" *ngIf="user.status === 'A'"
                                         (click)="deleteUser(user, i)" [disabled]="user.id === userId"
                                         [class.disabled]="user.id === userId">
                                         Borrar
                                     </button>
 
-                                    <button class="btn btn-sm btn-outline-success" *ngIf="user.status === 'I'"
+                                    <button class="btn btn-sm btn-success" *ngIf="user.status === 'I'"
                                         (click)="activeUser(user, i)" [disabled]="user.id === userId"
                                         [class.disabled]="user.id === userId">
                                         Activar

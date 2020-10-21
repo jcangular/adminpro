@@ -1,15 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
-import { fromEvent, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, pluck, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { IAPIError, IAPIFindHospitals } from '../../../interfaces/api.interfaces';
-import { Hospital } from '../../../models/hospital.model';
-import { FindsService } from '../../../services/finds.service';
-import { HospitalService } from '../../../services/hospital.service';
-import { ModalImagenService } from '../../../services/modal-imagen.service';
+import { IAPIError, IAPIFindHospitals } from '@interfaces/api.interfaces';
+import { Hospital } from '@models/hospital.model';
+import { FindsService } from '@services/finds.service';
+import { HospitalService } from '@services/hospital.service';
+import { ModalImagenService } from '@services/modal-imagen.service';
 
 @Component({
     selector: 'app-hospitals',
@@ -159,7 +159,7 @@ export class HospitalsComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * 
+     *
      */
     private searchHospitals(): void {
         this.loading = true;
