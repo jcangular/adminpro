@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivationEnd, Router } from '@angular/router';
+import { ActivatedRoute, ActivationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 
@@ -31,7 +31,7 @@ export class BreadcrumbsComponent implements OnDestroy {
                 map<ActivationEnd, any[]>(event => [event.snapshot.data, event.snapshot.url])
             )
             .subscribe((info) => {
-                this.title = info[0].title;
+                this.title = `${info[0].title}${info[0]?.subTitle || ''}`;
                 this.url = info[1];
                 document.title = `AdminPro | ${this.title}`;
 

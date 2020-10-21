@@ -11,11 +11,11 @@ export class SidebarService {
             icon: 'mdi mdi-gauge',
             ruta: '/dashboard',
             menu: [
-                { title: 'Principal', ruta: '' },
-                { title: 'Grafica', ruta: 'grafica1' },
-                { title: 'Progress', ruta: 'progress' },
-                { title: 'Promesas', ruta: 'promesas' },
-                { title: 'RxJs', ruta: 'rxjs' },
+                { title: 'Principal', ruta: '', exact: true },
+                { title: 'Grafica', ruta: 'grafica1', exact: false },
+                { title: 'Progress', ruta: 'progress', exact: false },
+                { title: 'Promesas', ruta: 'promesas', exact: false },
+                { title: 'RxJs', ruta: 'rxjs', exact: false },
             ]
         },
         {
@@ -24,9 +24,9 @@ export class SidebarService {
             icon: 'fa fa-tasks',
             ruta: '/dashboard',
             menu: [
-                { title: 'Usuarios', ruta: 'users' },
-                { title: 'Hospitales', ruta: 'hospitals' },
-                { title: 'Doctores', ruta: 'doctors' }
+                { title: 'Usuarios', ruta: 'users', exact: false },
+                { title: 'Hospitales', ruta: 'hospitals', exact: false },
+                { title: 'Doctores', ruta: 'doctors', exact: false }
             ]
 
         }
