@@ -25,3 +25,13 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Deploy Application in Docker (NodeJS, Nginx)
+
+En el archivo `Dockerfile` contiene los stages tanto de Node y Nginx.
+
+RUN `docker build -t adminpro:1.0.0 .`
+
+Run `docker run -d -p 42100:80 adminpro:1.0.0`
+
+_Nota: Es requerido que el servidor está ejecutandose._
