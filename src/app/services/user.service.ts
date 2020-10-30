@@ -19,8 +19,8 @@ const baseURL = environment.baseURL;
 export class UserService {
 
     private auth2: gapi.auth2.GoogleAuth;
-
     public user: User;
+    public menu: any[] = [];
 
     constructor(
         private http: HttpClient,
@@ -40,6 +40,10 @@ export class UserService {
         return this.user.id;
     }
 
+    public get userRole(): 'ADMIN_ROLE' | 'USER_ROLE' {
+        return this.user.role;
+    }
+
     private get headers(): { headers: { 'x-token': string; }; } {
         return {
             headers: { 'x-token': this.token }
@@ -47,13 +51,14 @@ export class UserService {
     }
 
     /**
-     * Registra un nuevo usuario a la aplicación.
+     * Registra un nuevo usuario a la aplicación e inicia sesión.
      * @param form contiene el formulario de registro.
      */
     public registerUser(form: RegisterForm): Observable<any> {
         return this.http.post(`${baseURL}/users`, form)
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
+                this.menu = result.menu;
             }));
     }
 
@@ -65,6 +70,7 @@ export class UserService {
         return this.http.post(`${baseURL}/auth/login`, form)
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
+                this.menu = result.menu;
                 if (form.remember) {
                     localStorage.setItem('email', form.email);
                 } else {
@@ -97,6 +103,7 @@ export class UserService {
         return this.http.post(`${baseURL}/auth/google`, { token: idToken })
             .pipe(tap((result: any) => {
                 sessionStorage.setItem('token', result.token);
+                this.menu = result.menu;
             }));
 
     }
@@ -110,6 +117,7 @@ export class UserService {
                 map((result: any) => {
                     this.user = User.createUserFromAPI(result.user);
                     sessionStorage.setItem('token', result.token);
+                    this.menu = result.menu;
                     return true;
                 }),
                 catchError(err => from([false]))

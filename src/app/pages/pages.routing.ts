@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AuthGuard } from '../guards/auth.guard';
+import { AdminGuard } from '../guards/admin.guard';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { Grafica1Component } from './grafica1/grafica1.component';
@@ -38,7 +39,9 @@ const routes: Routes = [{
         { path: 'doctors', component: DoctorsComponent, data: { title: 'Administración de Doctores' } },
         { path: 'doctors/:id', component: DoctorComponent, data: { title: 'Administración de Doctores' } },
         { path: 'hospitals', component: HospitalsComponent, data: { title: 'Administración de Hospitales' } },
-        { path: 'users', component: UsersComponent, data: { title: 'Administración de Usuarios' } },
+
+        // Rutas para administradores
+        { path: 'users', canActivate: [AdminGuard], component: UsersComponent, data: { title: 'Administración de Usuarios' } },
     ]
 }];
 

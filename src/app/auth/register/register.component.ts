@@ -89,7 +89,7 @@ export class RegisterComponent implements OnInit {
                 Swal.fire({
                     icon: 'error',
                     title: '¡Error al registrarte!',
-                    text: error.error.msg,
+                    text: error.message,
                     didClose: () => setTimeout(() => this.inputMail.nativeElement.select(), 10)
                 });
             });

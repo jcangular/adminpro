@@ -14,15 +14,17 @@ import { UserService } from '../../services/user.service';
 })
 export class SidebarComponent {
 
-    menu: any[];
     public user: User;
 
     constructor(
         private sidebarService: SidebarService,
         private userService: UserService
     ) {
-        this.menu = this.sidebarService.menu;
         this.user = userService.user;
+    }
+
+    public get menu(): any[] {
+        return this.sidebarService.menu;
     }
 
     /**
